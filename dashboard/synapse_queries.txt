@@ -1,0 +1,24 @@
+-- Create table in Synapse Analytics
+CREATE TABLE IF NOT EXISTS athletes_with_sentiment (
+    athlete_id VARCHAR(50),
+    name VARCHAR(100),
+    bio VARCHAR(500),
+    medals INT,
+    team VARCHAR(50),
+    sentiment_label VARCHAR(50),
+    sentiment_score FLOAT,
+    load_timestamp DATETIME
+);
+
+-- Query: Top teams by medals
+SELECT team, SUM(medals) AS total_medals
+FROM athletes_with_sentiment
+GROUP BY team
+ORDER BY total_medals DESC
+LIMIT 10;
+
+-- Query: Sentiment distribution
+SELECT sentiment_label, COUNT(*) AS athlete_count, AVG(sentiment_score) AS avg_score
+FROM athletes_with_sentiment
+GROUP BY sentiment_label
+ORDER BY athlete_count DESC;
