@@ -1,11 +1,14 @@
 import pandas as pd
+import json
 from azure.storage.blob import BlobServiceClient
 from datetime import datetime
 
-# Azure Blob Storage configuration (use environment variables in production)
-CONNECTION_STRING = "your-connection-string"
-CONTAINER_NAME = "olympic-data"
-BLOB_NAME = f"raw/olympics_{datetime.now().strftime('%Y%m%d')}.csv"
+# Load configuration from JSON file
+with open("config/azure_config.json", "r") as config_file:
+    config = json.load(config_file)
+    CONNECTION_STRING = config["connection_string"]
+    CONTAINER_NAME = config["container_name"]
+    BLOB_NAME = f"raw/olympics_{datetime.now().strftime('%Y%m%d')}.csv"
 
 def extract_olympic_data():
     # Load Olympic data (e.g., from Kaggle or API)
@@ -18,6 +21,7 @@ def extract_olympic_data():
     return df
 
 def save_to_blob(df):
+    # Initialize BlobServiceClient using connection string from config
     blob_service_client = BlobServiceClient.from_connection_string(CONNECTION_STRING)
     blob_client = blob_service_client.get_blob_client(container=CONTAINER_NAME, blob=BLOB_NAME)
     blob_client.upload_blob(df.to_csv(index=False), overwrite=True)
